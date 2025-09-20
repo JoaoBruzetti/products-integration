@@ -14,22 +14,26 @@ Recomendavel fazer deploy utilizando o codespaces do github
 
     **`cp .env.example .env`**
 
-4. Gerar chave
+4. Rodar composer install
+
+    **`composer install`**
+
+5. Gerar chave
 
     **`php artisan key:generate`**
 
-5. Rodar migrations
+6. Rodar migrations
 
     **`php artisan migrate`**
 
-6. Rodar comando para inserir produtos no banco de dados
+7. Rodar comando para inserir produtos no banco de dados
 
     **`php artisan importProducts produtos`**
 
-7. Rodar comando para inserir variações no banco de dados
+8. Rodar comando para inserir variações no banco de dados
 
     **`php artisan importVariations variacoes`**
 
-8. Rodar comando para Simular envio de dados para Vesti
+9. Rodar comando para Simular envio de dados para Vesti
 
     **`php artisan sendVesti`**
