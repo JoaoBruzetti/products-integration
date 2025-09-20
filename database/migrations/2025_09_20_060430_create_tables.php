@@ -22,10 +22,10 @@ class CreateTables extends Migration
             $table->text('composition')->nullable();
             $table->text('brand')->nullable();
             $table->float('price_promotion')->nullable();
-            $table->number('weight')->nullable();
-            $table->number('height')->nullable();
-            $table->number('width')->nullable();
-            $table->number('length')->nullable();
+            $table->integer('weight')->nullable();
+            $table->integer('height')->nullable();
+            $table->integer('width')->nullable();
+            $table->integer('length')->nullable();
             $table->timestamps();
         });
 

@@ -21,3 +21,11 @@ Recomendavel fazer deploy utilizando o codespaces do github
 5. Rodar migrations
 
     **`php artisan migrate`**
+
+6. Rodar comando para inserir produtos no banco de dados
+
+    **`php artisan importProducts produtos`**
+
+7. Rodar comando para inserir variações no banco de dados
+
+    **`php artisan importVariations variacoes`**

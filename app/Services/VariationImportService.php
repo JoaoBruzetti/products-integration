@@ -56,6 +56,11 @@ class VariationImportService
         $variationsId = [];
         foreach ($data as $variation) {
 
+            if(count($toInsert) >= 5000) {
+                $this->variationRepository->insertAll($toInsert);
+                $toInsert = [];
+            }
+
             try {
                 $dto = new VariationDto(...$variation);
             } catch (\Throwable $e) {
@@ -66,16 +71,15 @@ class VariationImportService
             if (!$productId || !in_array($productId, $products)) {
                 continue;
             }
-
             $toInsert[] = [
                 'order' => $dto->ordem,
                 'quantity' => $dto->quantidade,
-                'product_id' => $productId,
+                'product_id' => (int) $productId,
                 'color_id' => $this->verifyAtribute($this->colors, $dto->cor, $this->colorRepository),
                 'size_id' => $this->verifyAtribute($this->sizes, $dto->tamanho, $this->sizeRepository),
                 'unit_id' => $this->verifyAtribute($this->units, $dto->unidade, $this->unitRepository),
             ];
-            $variationsId = $dto->variacao;
+            $variationsId[] = $dto->variacao;
         }
 
         if (!empty($toInsert)) {

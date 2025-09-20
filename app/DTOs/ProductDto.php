@@ -7,7 +7,7 @@ class ProductDto
     public function __construct(
         public string $referencia,
         public string $nome,
-        public float $preco,
+        public string $preco,
         public ?string $descricao = null,
         public ?string $composicao = null,
         public ?string $marca = null,
@@ -23,11 +23,11 @@ class ProductDto
         return [
             'id' => $this->referencia,
             'name' => $this->nome,
-            'price' => $this->preco,
+            'price' => (float) $this->preco,
             'description' => $this->descricao,
             'composition' => $this->composicao,
             'brand' => $this->marca,
-            'price_promotion' => $this->promocao,
+            'price_promotion' => (float) $this->promocao,
             'weight' => $this->peso,
             'height' => $this->altura,
             'width' => $this->largura,
