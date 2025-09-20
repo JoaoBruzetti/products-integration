@@ -15,7 +15,7 @@ class Product extends Model
         'composition',
         'brand',
         'price',
-        'price_promotion',
+        'price_promotional',
         'active',
         'weight',
         'height',
@@ -26,5 +26,10 @@ class Product extends Model
     public function variations()
     {
         return $this->hasMany(Variation::class);
+    }
+
+    public function categories()
+    {
+        return $this->hasMany(Category::class);
     }
 }

@@ -15,4 +15,12 @@ class ProductRepository
     {
         Product::insert($productsData);
     }
+
+    public function getAllWithVariations(int $chunkSize, ?callable $callback)
+    {
+          Product::with('variations.color', 'variations.unit', 'categories')
+            ->chunk($chunkSize, function ($products) use ($callback) {
+                $callback($products);
+            });
+    }
 }

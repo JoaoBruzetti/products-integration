@@ -29,3 +29,7 @@ Recomendavel fazer deploy utilizando o codespaces do github
 7. Rodar comando para inserir variações no banco de dados
 
     **`php artisan importVariations variacoes`**
+
+8. Rodar comando para Simular envio de dados para Vesti
+
+    **`php artisan sendVesti`**

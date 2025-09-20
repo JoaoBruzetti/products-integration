@@ -6,7 +6,7 @@ class ProductVestiDto
 {
     public function __construct(
         public string $integration_id,
-        public string $code,
+        public ?string $code,
         public string $name,
         public bool $active,
         public float $price,

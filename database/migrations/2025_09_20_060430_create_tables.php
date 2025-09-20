@@ -21,7 +21,7 @@ class CreateTables extends Migration
             $table->text('description')->nullable();
             $table->text('composition')->nullable();
             $table->text('brand')->nullable();
-            $table->float('price_promotion')->nullable();
+            $table->float('price_promotional')->nullable();
             $table->integer('weight')->nullable();
             $table->integer('height')->nullable();
             $table->integer('width')->nullable();
