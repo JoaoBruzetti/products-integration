@@ -37,3 +37,7 @@ Recomendavel fazer deploy utilizando o codespaces do github
 9. Rodar comando para Simular envio de dados para Vesti
 
     **`php artisan sendVesti`**
+
+10. Rodar testes unitarios
+
+    **`php artisan test`**
