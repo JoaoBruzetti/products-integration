@@ -6,10 +6,11 @@ use App\Models\Size;
 
 class SizeRepository
 {
-    public function findByName(string $name): ?Size
+    public function getAll(): array
     {
-        return Size::where('name', $name)->first();
+        return Size::pluck('id', 'name')->toArray();
     }
+
     public function create(string $name): Size
     {
         return Size::create(['name' => $name]);

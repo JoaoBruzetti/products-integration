@@ -2,12 +2,13 @@
 
 namespace App\Services;
 
-use App\DTOs\VariationJsonDto;
+use App\DTOs\VariationDto;
 use App\Repositories\VariationRepository;
 use App\Repositories\ColorRepository;
 use App\Repositories\SizeRepository;
 use App\Repositories\UnitRepository;
 use App\Repositories\ProductRepository;
+use Illuminate\Support\Facades\File;
 
 class VariationImportService
 {
@@ -16,6 +17,11 @@ class VariationImportService
     protected SizeRepository $sizeRepository;
     protected UnitRepository $unitRepository;
     protected ProductRepository $productRepository;
+
+
+    public array $colors = [];
+    public array $sizes = [];
+    public array $units = [];
 
     public function __construct(
         VariationRepository $variationRepository,
@@ -29,42 +35,65 @@ class VariationImportService
         $this->sizeRepository = $sizeRepository;
         $this->unitRepository = $unitRepository;
         $this->productRepository = $productRepository;
+        $this->colors = $this->colorRepository->getAll();
+        $this->sizes = $this->sizeRepository->getAll();
+        $this->units = $this->unitRepository->getAll();
     }
 
-    /**
-     * @param VariationJsonDto[] $variationsDto
-     * @return array
-     */
-    public function import(array $variationsDto): array
+    public function import(string $filename): string
     {
+        $path = base_path($filename);
+        if (!File::exists($path)) {
+            return "Arquivo {$filename} não encontrado!";
+        }
+        $json = File::get($path);
+        $data = json_decode($json, true);
+        if (!is_array($data)) {
+            return "Arquivo {$filename} inválido!";
+        }
+        $products = $this->productRepository->getAll();
         $toInsert = [];
-        foreach ($variationsDto as $dto) {
-            if (!$dto instanceof VariationJsonDto) {
+        $variationsId = [];
+        foreach ($data as $variation) {
+
+            try {
+                $dto = new VariationDto(...$variation);
+            } catch (\Throwable $e) {
                 continue;
             }
 
-            $parts = explode('_', $dto->variacao);
-            $productId = $parts[0] ?? null;
-            if (!$productId || !$this->productRepository->findById($productId)) {
+            $productId = explode('_', $dto->variacao)[0] ?? null;
+            if (!$productId || !in_array($productId, $products)) {
                 continue;
             }
-
-            $color = $this->colorRepository->findByName($dto->cor) ?? $this->colorRepository->create($dto->cor);
-            $size = $this->sizeRepository->findByName($dto->tamanho) ?? $this->sizeRepository->create($dto->tamanho);
-            $unit = $this->unitRepository->findByName($dto->unidade) ?? $this->unitRepository->create($dto->unidade);
 
             $toInsert[] = [
                 'order' => $dto->ordem,
                 'quantity' => $dto->quantidade,
                 'product_id' => $productId,
-                'color_id' => $color->id,
-                'size_id' => $size->id,
-                'unit_id' => $unit->id,
+                'color_id' => $this->verifyAtribute($this->colors, $dto->cor, $this->colorRepository),
+                'size_id' => $this->verifyAtribute($this->sizes, $dto->tamanho, $this->sizeRepository),
+                'unit_id' => $this->verifyAtribute($this->units, $dto->unidade, $this->unitRepository),
             ];
+            $variationsId = $dto->variacao;
         }
+
         if (!empty($toInsert)) {
-            $this->variationRepository->insertMany($toInsert);
+            $this->variationRepository->insertAll($toInsert);
+            return "Variações inseridas: " . implode(", ", $variationsId);
         }
-        return $toInsert;
+
+        return "Nehuma variação nova para inserir.";
+    }
+
+    private function verifyAtribute(array &$attributes, string $name, $repository): int
+    {
+        if (isset($attributes[$name])) {
+            return $attributes[$name];
+        }
+        $attribute = $repository->create($name);
+        $attributes = $repository->getAll();
+        $attributes[$name] = $attribute->id;
+        return $attribute->id;
     }
 }

@@ -6,10 +6,11 @@ use App\Models\Color;
 
 class ColorRepository
 {
-    public function findByName(string $name): ?Color
+    public function getAll(): array
     {
-        return Color::where('name', $name)->first();
+        return Color::pluck('id', 'name')->toArray();
     }
+
     public function create(string $name): Color
     {
         return Color::create(['name' => $name]);

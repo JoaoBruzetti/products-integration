@@ -2,7 +2,7 @@
 
 namespace App\DTOs;
 
-class VariationJsonDto
+class VariationDto
 {
     public function __construct(
         public string $variacao,

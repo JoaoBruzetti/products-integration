@@ -6,12 +6,10 @@ use App\Models\Product;
 
 class ProductRepository
 {
-
-    public function verifyProduct(string $referencia): bool
+    public function getAll(): array
     {
-        return Product::where('id', $referencia)->exists();
+        return Product::pluck('id')->toArray();
     }
-
 
     public function insertAll(array $productsData): void
     {

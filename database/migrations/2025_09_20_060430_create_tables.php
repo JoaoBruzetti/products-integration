@@ -16,12 +16,12 @@ class CreateTables extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->text('name');
+            $table->float('price');
+            $table->boolean('active')->default(true);
             $table->text('description')->nullable();
             $table->text('composition')->nullable();
             $table->text('brand')->nullable();
-            $table->float('price');
             $table->float('price_promotion')->nullable();
-            $table->boolean('active')->default(true);
             $table->number('weight')->nullable();
             $table->number('height')->nullable();
             $table->number('width')->nullable();

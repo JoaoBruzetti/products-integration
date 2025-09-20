@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\DTOs\ProductJsonDto;
-
+use App\DTOs\ProductDto;
+use Illuminate\Support\Facades\File;
 use App\Repositories\ProductRepository;
 
 class ProductImportService
@@ -14,40 +14,39 @@ class ProductImportService
     {
         $this->productRepository = $productRepository;
     }
-    /**
-     * Recebe um array de ProductJsonDto, verifica se já existe pelo campo referencia,
-     * e armazena os novos em massa na tabela products.
-     *
-     * @param ProductJsonDto[] $productsDto
-     * @return array Inseridos
-     */
-    public function import(array $productsDto): array
+
+    public function import(string $filename): string
     {
+
+        $path = base_path($filename);
+        if (!File::exists($path)) {
+            return "Arquivo {$filename} não encontrado!";
+        }
+        $json = File::get($path);
+        $data = json_decode($json, true);
+        if (!is_array($data)) {
+            return "Arquivo {$filename} inválido!";
+        }
+        $products = $this->productRepository->getAll();
         $toInsert = [];
-        foreach ($productsDto as $dto) {
-            if (!$dto instanceof ProductJsonDto) {
+        $productdsIds = [];
+        foreach ($data as $product) {
+
+            try {
+                $dto = new ProductDto(...$product);
+            } catch (\Throwable $e) {
                 continue;
             }
 
-            if (!$this->productRepository->verifyProduct($dto->referencia)) {
-                $toInsert[] = [
-                    'id' => $dto->referencia,
-                    'name' => $dto->nome,
-                    'description' => $dto->descricao,
-                    'composition' => $dto->composicao,
-                    'brand' => $dto->marca,
-                    'price' => $dto->preco,
-                    'price_promotion' => $dto->promocao,
-                    'weight' => $dto->peso,
-                    'height' => $dto->altura,
-                    'width' => $dto->largura,
-                    'length' => $dto->tamanho
-                ];
+            if (!in_array($dto->referencia, $products)) {
+                $toInsert[] = $dto->toArray();
+                $productdsIds[] = $dto->referencia;
             }
         }
         if (!empty($toInsert)) {
             $this->productRepository->insertAll($toInsert);
+            return "Produtos inseridos: " . implode(", ", $productdsIds);
         }
-        return $toInsert;
+        return "Nehum produto novo para inserir.";
     }
 }

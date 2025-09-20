@@ -6,8 +6,10 @@ use App\Models\Variation;
 
 class VariationRepository
 {
-    public function insertMany(array $variationsData): void
+
+    public function insertAll(array $variationsData): void
     {
         Variation::insert($variationsData);
     }
+
 }
